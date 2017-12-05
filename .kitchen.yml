@@ -1,26 +1,27 @@
 ---
 driver:
-  name: vagrant
-
-provisioner:
-  name: chef_zero
-  # You may wish to disable always updating cookbooks in CI or other testing environments.
-  # For example:
-  #   always_update_cookbooks: <%= !ENV['CI'] %>
-  always_update_cookbooks: true
-
+  name: ec2
+  region: us-east-1
+  subnet_id: subnet-bbd17194
+  security_group_ids:
+  aws_ssh_key_id: virgina-key-pair
+  tags:
+    Owner: priyanka.elluri
+    Environment: Testing
+    Project: reandeploy
+transport:
+  ssh_key: /home/ec2-user/virgina-key-pair.pem
 verifier:
   name: inspec
-
 platforms:
+  # Ubuntu trusty
   - name: ubuntu-14.04
-  - name: centos-7.3
-
+    driver:
+      instance_type: t2.micro
+      tags:
+        Name: web-page
 suites:
   - name: default
+    sudo: true
     run_list:
       - recipe[jenkins::default]
-    verifier:
-      inspec_tests:
-        - test/smoke/default
-    attributes:
